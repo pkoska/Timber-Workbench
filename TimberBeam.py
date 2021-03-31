@@ -57,17 +57,15 @@ def makeTimberBeam2( name = 'TimberBeam' ):
     return obj
 
 
-
 #        def execute(self, obj):
             
-    
 
 def makeTimberBeam(length=None, width=None, height=None, name="TimberBeam"):
     '''makeTimberBeam([length],[width],[heigth],[name]): creates a
     timber beam element based on the given profile object and the given
     extrusion height. If no base object is given, you can also specify
     length and width for a cubic object.'''
-    p = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Timber")
+    p = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Timber-Workbench")
     obj = FreeCAD.ActiveDocument.addObject("Part::FeaturePython",name)
     obj.Label = translate("TimberBeam",name)
     _TimberBeam(obj)
@@ -103,16 +101,16 @@ class _CommandTimberBeam:
         return not FreeCAD.ActiveDocument is None
 
     def Activated(self):
-        p = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Timber")
-        self.Length = p.GetFloat("BeamLength",1000)
-        self.Width = p.GetFloat("BeamWidth",100)
-        self.Height = p.GetFloat("BeamHeight",100)
+        p = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Timber-Workbench")
+        self.Length = p.GetFloat("BeamLength",7000)
+        self.Width = p.GetFloat("BeamWidth",1000)
+        self.Height = p.GetFloat("BeamHeight",1000)
         #self.Profile = 0
         self.continueCmd = False
         self.DECIMALS = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Units").GetInt("Decimals",2)
         import DraftGui
         self.FORMAT = DraftGui.makeFormatSpec(self.DECIMALS,'Length')
-        """
+
         sel = FreeCADGui.Selection.getSelection()
         if sel:
             st = Draft.getObjectsOfType(sel,"Structure")
@@ -135,12 +133,12 @@ class _CommandTimberBeam:
                 FreeCAD.ActiveDocument.commitTransaction()
                 FreeCAD.ActiveDocument.recompute()
                 return
-        """
+
 
         # interactive mode
         if hasattr(FreeCAD,"DraftWorkingPlane"):
             FreeCAD.DraftWorkingPlane.setup()
-        import DraftTrackers
+        import draftguitools.gui_trackers as DraftTrackers
         self.points = []
         self.tracker = DraftTrackers.boxTracker()
         self.tracker.width(self.Width)
@@ -283,6 +281,7 @@ class _TimberBeam(ArchComponent.Component):
         #obj.addProperty("App::PropertyVectorList","Nodes","Arch","The structural nodes of this element")
         #obj.addProperty("App::PropertyString","Profile","Arch","A description of the standard profile this element is based upon")
         self.Type = "TBeam"
+        #obj.Proxy = self
         obj.Role = Roles
         structure = Arch.makeStructure()
         #structure.setEditorMode("Width", 1)
@@ -388,10 +387,11 @@ class _TimberBeam(ArchComponent.Component):
         base.setEditorMode("Length", 1)
         base.setEditorMode("Placement", 1)
         return base
-        """
+
+
     "The Structure object"
     def __init__(self,obj):
-        #print("TimberBeam Start Init")
+        print("TimberBeam Start Init")
         ArchStructure._Structure.__init__(self,obj)
         obj.addProperty("App::PropertyEnumeration","Preset","Timber","Preset parameters for this beam")
         obj.addProperty("App::PropertyBool","Moise","Timber","Type of machining at beam start")
@@ -448,11 +448,11 @@ class _TimberBeam(ArchComponent.Component):
         #preset = obj.Preset
         if preset != "None":
             idx = self.presetslist.index(preset) - 1
-            presetfolder = "User parameter:BaseApp/Preferences/Mod/Timber/TimberBeamPresets/TBPreset" + str(idx)
+            presetfolder = "User parameter:BaseApp/Preferences/Mod/Timber-Workbench/TimberBeamPresets/TBPreset" + str(idx)
             width = FreeCAD.ParamGet(presetfolder).GetString("Width")
             height = FreeCAD.ParamGet(presetfolder).GetString("Height")
         return [width, height]
-    """
+
 
 class _ViewProviderTimberBeam(ArchComponent.ViewProviderComponent):
     "The Structure ViewProvider object"

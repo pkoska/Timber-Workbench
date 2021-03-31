@@ -180,12 +180,12 @@ class _ListingTaskPanel:
         return int(QtGui.QDialogButtonBox.Ok|QtGui.QDialogButtonBox.Cancel)
 
     def retranslateUi(self, TaskPanel):
-        TaskPanel.setWindowTitle(QtGui.QApplication.translate("Timber", "Timber Listing", None, QtGui.QApplication.UnicodeUTF8))
-        self.title.setText(QtGui.QApplication.translate("Timber", "Press Ctrl to multiple selection", None, QtGui.QApplication.UnicodeUTF8))
-        self.textobjlist.setText(QtGui.QApplication.translate("Timber", "Objects to be listed", None, QtGui.QApplication.UnicodeUTF8))
-        self.infoText.setText(QtGui.QApplication.translate("Timber", "Export", None, QtGui.QApplication.UnicodeUTF8))
-        self.checkSpreadsheet.setText(QtGui.QApplication.translate("Timber", "Make Spreadsheet", None, QtGui.QApplication.UnicodeUTF8))
-        self.checkShape.setText(QtGui.QApplication.translate("Timber", "Make aligned shapes", None, QtGui.QApplication.UnicodeUTF8))
+        TaskPanel.setWindowTitle(QtGui.QApplication.translate("Timber", "Timber Listing", None))
+        self.title.setText(QtGui.QApplication.translate("Timber", "Press Ctrl to multiple selection", None))
+        self.textobjlist.setText(QtGui.QApplication.translate("Timber", "Objects to be listed", None))
+        self.infoText.setText(QtGui.QApplication.translate("Timber", "Export", None))
+        self.checkSpreadsheet.setText(QtGui.QApplication.translate("Timber", "Make Spreadsheet", None))
+        self.checkShape.setText(QtGui.QApplication.translate("Timber", "Make aligned shapes", None))
 
 class Listing():
     def __init__(self, objs, export):

@@ -377,32 +377,32 @@ class TimberBeamTaskPanel:
         self.update()
 
     def retranslateUi(self, TaskPanel):
-        TaskPanel.setWindowTitle(QtGui.QApplication.translate("Timber", "Timber", None, QtGui.QApplication.UnicodeUTF8))
-        self.delButton.setText(QtGui.QApplication.translate("Arch", "Remove", None, QtGui.QApplication.UnicodeUTF8))
-        self.addButton.setText(QtGui.QApplication.translate("Arch", "Add", None, QtGui.QApplication.UnicodeUTF8))
-        self.title.setText(QtGui.QApplication.translate("Arch", "Components of this object", None, QtGui.QApplication.UnicodeUTF8))
-        self.treeBase.setText(0,QtGui.QApplication.translate("Arch", "Base component", None, QtGui.QApplication.UnicodeUTF8))
-        self.treeAdditions.setText(0,QtGui.QApplication.translate("Arch", "Additions", None, QtGui.QApplication.UnicodeUTF8))
-        self.treeSubtractions.setText(0,QtGui.QApplication.translate("Arch", "Subtractions", None, QtGui.QApplication.UnicodeUTF8))
-        self.treeObjects.setText(0,QtGui.QApplication.translate("Arch", "Objects", None, QtGui.QApplication.UnicodeUTF8))
-        self.treeAxes.setText(0,QtGui.QApplication.translate("Arch", "Axes", None, QtGui.QApplication.UnicodeUTF8))
-        self.treeComponents.setText(0,QtGui.QApplication.translate("Arch", "Components", None, QtGui.QApplication.UnicodeUTF8))
-        self.treeFixtures.setText(0,QtGui.QApplication.translate("Arch", "Fixtures", None, QtGui.QApplication.UnicodeUTF8))
-        self.treeMachinings.setText(0,QtGui.QApplication.translate("Timber", "Machinings", None, QtGui.QApplication.UnicodeUTF8))
+        TaskPanel.setWindowTitle(QtGui.QApplication.translate("Timber", "Timber", None))
+        self.delButton.setText(QtGui.QApplication.translate("Arch", "Remove", None))
+        self.addButton.setText(QtGui.QApplication.translate("Arch", "Add", None))
+        self.title.setText(QtGui.QApplication.translate("Arch", "Components of this object", None))
+        self.treeBase.setText(0,QtGui.QApplication.translate("Arch", "Base component", None))
+        self.treeAdditions.setText(0,QtGui.QApplication.translate("Arch", "Additions", None))
+        self.treeSubtractions.setText(0,QtGui.QApplication.translate("Arch", "Subtractions", None))
+        self.treeObjects.setText(0,QtGui.QApplication.translate("Arch", "Objects", None))
+        self.treeAxes.setText(0,QtGui.QApplication.translate("Arch", "Axes", None))
+        self.treeComponents.setText(0,QtGui.QApplication.translate("Arch", "Components", None))
+        self.treeFixtures.setText(0,QtGui.QApplication.translate("Arch", "Fixtures", None))
+        self.treeMachinings.setText(0,QtGui.QApplication.translate("Timber", "Machinings", None))
 
-        applybutton = QtGui.QApplication.translate("Timber", "Apply", None, QtGui.QApplication.UnicodeUTF8)
-        self.widthL.setText(QtGui.QApplication.translate("Timber", "Width", None, QtGui.QApplication.UnicodeUTF8))
-        self.heightL.setText(QtGui.QApplication.translate("Timber", "Height", None, QtGui.QApplication.UnicodeUTF8))
-        self.presetsL.setText(QtGui.QApplication.translate("Timber", "Presets", None, QtGui.QApplication.UnicodeUTF8))
+        applybutton = QtGui.QApplication.translate("Timber", "Apply", None)
+        self.widthL.setText(QtGui.QApplication.translate("Timber", "Width", None))
+        self.heightL.setText(QtGui.QApplication.translate("Timber", "Height", None))
+        self.presetsL.setText(QtGui.QApplication.translate("Timber", "Presets", None))
         if self.applyrename :
             self.presetRenameBT.setText(applybutton)
         else:
-            self.presetRenameBT.setText(QtGui.QApplication.translate("Timber", "Rename", None, QtGui.QApplication.UnicodeUTF8))
+            self.presetRenameBT.setText(QtGui.QApplication.translate("Timber", "Rename", None))
         if self.applynew :
             self.presetNewBT.setText(applybutton)
         else:
-            self.presetNewBT.setText(QtGui.QApplication.translate("Timber", "New", None, QtGui.QApplication.UnicodeUTF8))
-        self.presetSaveBT.setText(QtGui.QApplication.translate("Timber", "Save", None, QtGui.QApplication.UnicodeUTF8))
+            self.presetNewBT.setText(QtGui.QApplication.translate("Timber", "New", None))
+        self.presetSaveBT.setText(QtGui.QApplication.translate("Timber", "Save", None))
 
 def processSubShapes(obj,base,placement=None):
     "Adds additions and subtractions to a base shape"

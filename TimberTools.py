@@ -113,9 +113,9 @@ class _AddTagTaskPanel:
         return int(QtGui.QDialogButtonBox.Ok|QtGui.QDialogButtonBox.Cancel)
 
     def retranslateUi(self, TaskPanel):
-        TaskPanel.setWindowTitle(QtGui.QApplication.translate("Arch", "Add Tag", None, QtGui.QApplication.UnicodeUTF8))
-        self.title.setText(QtGui.QApplication.translate("Arch", "Existing Tag", None, QtGui.QApplication.UnicodeUTF8))
-        self.infoText.setText(QtGui.QApplication.translate("Arch", "Tag", None, QtGui.QApplication.UnicodeUTF8))
+        TaskPanel.setWindowTitle(QtGui.QApplication.translate("Arch", "Add Tag", None))
+        self.title.setText(QtGui.QApplication.translate("Arch", "Existing Tag", None))
+        self.infoText.setText(QtGui.QApplication.translate("Arch", "Tag", None))
 
 class _CommandRepartition:
     "the Timber Repartition command definition"
