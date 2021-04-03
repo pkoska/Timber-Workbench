@@ -47,6 +47,7 @@ if FreeCAD.GuiUp:
 # Possible roles for timber elements
 Roles = ["Beam","Column","Slab","Wall","Curtain Wall","Roof","Foundation","Pile","Tendon"]
 
+'''
 def makeTimberBeam2( name = 'TimberBeam' ):
     base = Arch.makeStructure( None, 1000.0 , 80.0 , 200.0 , 'TBStructure')
     obj = Arch.makeStructure(base, 1 , 1 , 1 , name)
@@ -56,18 +57,24 @@ def makeTimberBeam2( name = 'TimberBeam' ):
     obj.setEditorMode("Placement", 1)
     return obj
 
-
 #        def execute(self, obj):
-            
+'''                
 
 def makeTimberBeam(length=None, width=None, height=None, name="TimberBeam"):
     '''makeTimberBeam([length],[width],[heigth],[name]): creates a
     timber beam element based on the given profile object and the given
     extrusion height. If no base object is given, you can also specify
     length and width for a cubic object.'''
-    p = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Timber-Workbench")
+    p = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Timber")
     obj = FreeCAD.ActiveDocument.addObject("Part::FeaturePython",name)
+    #obj.addProperty("App::PropertyLength","Length","1Timber","The length of this element.")
+    #obj.addProperty("App::PropertyLength","Width","1Timber","The width of this element.")
+    #obj.addProperty("App::PropertyLength","Height","1Timber","The height of this element.")
+    #obj.addProperty("App::PropertyEnumeration","Preset","1Timber","Preset parameters for this beam")
     obj.Label = translate("TimberBeam",name)
+    #Log message
+    FreeCAD.Console.PrintMessage(width)
+    FreeCAD.Console.PrintMessage("Call TimberBeam Class")
     _TimberBeam(obj)
     if FreeCAD.GuiUp:
         _ViewProviderTimberBeam(obj.ViewObject)
@@ -101,10 +108,10 @@ class _CommandTimberBeam:
         return not FreeCAD.ActiveDocument is None
 
     def Activated(self):
-        p = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Timber-Workbench")
+        p = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Timber")
         self.Length = p.GetFloat("BeamLength",7000)
-        self.Width = p.GetFloat("BeamWidth",1000)
-        self.Height = p.GetFloat("BeamHeight",1000)
+        self.Width = p.GetFloat("BeamWidth",100)
+        self.Height = p.GetFloat("BeamHeight",100)
         #self.Profile = 0
         self.continueCmd = False
         self.DECIMALS = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Units").GetInt("Decimals",2)
@@ -133,7 +140,6 @@ class _CommandTimberBeam:
                 FreeCAD.ActiveDocument.commitTransaction()
                 FreeCAD.ActiveDocument.recompute()
                 return
-
 
         # interactive mode
         if hasattr(FreeCAD,"DraftWorkingPlane"):
@@ -270,6 +276,7 @@ class _CommandTimberBeam:
 class _TimberBeam(ArchComponent.Component):
     "The Timber Beam object"
     def __init__(self,obj):
+        FreeCAD.Console.PrintMessage("Init TimberBeam Class")
         ArchComponent.Component.__init__(self,obj)
         obj.addProperty("App::PropertyLength","Length","1Timber","The length of this element.")
         obj.addProperty("App::PropertyLength","Width","1Timber","The width of this element.")
@@ -281,23 +288,46 @@ class _TimberBeam(ArchComponent.Component):
         #obj.addProperty("App::PropertyVectorList","Nodes","Arch","The structural nodes of this element")
         #obj.addProperty("App::PropertyString","Profile","Arch","A description of the standard profile this element is based upon")
         self.Type = "TBeam"
-        #obj.Proxy = self
         obj.Role = Roles
         structure = Arch.makeStructure()
-        #structure.setEditorMode("Width", 1)
-        #structure.setEditorMode("Height", 1)
-        #structure.setEditorMode("Length", 1)
-        #structure.setEditorMode("Placement", 1)
+        structure.setEditorMode("Width", 1)
+        structure.setEditorMode("Height", 1)
+        structure.setEditorMode("Length", 1)
+        structure.setEditorMode("Placement", 1)
         structure.MoveWithHost = True
-        ArchComponent.addToComponent( obj , structure , "Base" )
+        ArchComponent.addToComponent(obj , structure , "Base")
     
+        "The Structure object"
+        FreeCAD.Console.PrintMessage("TimberBeam start init")
+        #print("TimberBeam Start Init")
+        #ArchStructure._Structure.__init__(self,obj)
+        #obj.addProperty("App::PropertyEnumeration","Preset","Timber","Preset parameters for this beam")
+        #obj.addProperty("App::PropertyBool","Moise","Timber","Type of machining at beam start")
+        #obj.addProperty("App::PropertyLink","Start","Timber","Type of machining at beam start")
+        #obj.addProperty("App::PropertyLink","End","Timber","Type of machining at beam end")
+        #obj.addProperty("App::PropertyLinkList","Machinings","Timber","All machinings of this beam")
+        #self.Type = "TimberBeam"
+        
+        #obj.Preset = TimberComponent.getPresetsList()
+        #base = Arch.makeStructure()
+        #base.MoveWithHost = True
+        #base.setEditorMode("Width", 1)
+        #base.setEditorMode("Height", 1)
+        #base.setEditorMode("Length", 1)
+        #base.setEditorMode("Placement", 1)
+        #ArchComponent.addToComponent(obj, base, "Base")
+        #print("TimberBeam End Init")
+
+
     def execute(self, obj):
+        FreeCAD.Console.PrintMessage("Create structure shape")
         "creates the structure shape"
         print("TimberBeam.execute : " + str(obj.Name) )
         if self.clone(obj):
             return
-            
+
         # creating base shape
+        FreeCAD.Console.PrintMessage("Create base shape")
         print("TB Placement : ", obj.Placement)
         print("Structure Placement : ", obj.Base.Placement)
         #placement = obj.Placement
@@ -388,28 +418,6 @@ class _TimberBeam(ArchComponent.Component):
         base.setEditorMode("Placement", 1)
         return base
 
-
-    "The Structure object"
-    def __init__(self,obj):
-        print("TimberBeam Start Init")
-        ArchStructure._Structure.__init__(self,obj)
-        obj.addProperty("App::PropertyEnumeration","Preset","Timber","Preset parameters for this beam")
-        obj.addProperty("App::PropertyBool","Moise","Timber","Type of machining at beam start")
-        obj.addProperty("App::PropertyLink","Start","Timber","Type of machining at beam start")
-        obj.addProperty("App::PropertyLink","End","Timber","Type of machining at beam end")
-        obj.addProperty("App::PropertyLinkList","Machinings","Timber","All machinings of this beam")
-        self.Type = "TimberBeam"
-        
-        obj.Preset = TimberComponent.getPresetsList()
-        base = Arch.makeStructure()
-        #base.MoveWithHost = True
-        base.setEditorMode("Width", 1)
-        base.setEditorMode("Height", 1)
-        base.setEditorMode("Length", 1)
-        base.setEditorMode("Placement", 1)
-        ArchComponent.addToComponent(obj,base,"Base")
-        #print("TimberBeam End Init")
-
     def execute(self, obj):
         #print("TimberBeam Start Execute")
         currentpreset = obj.Preset
@@ -448,11 +456,10 @@ class _TimberBeam(ArchComponent.Component):
         #preset = obj.Preset
         if preset != "None":
             idx = self.presetslist.index(preset) - 1
-            presetfolder = "User parameter:BaseApp/Preferences/Mod/Timber-Workbench/TimberBeamPresets/TBPreset" + str(idx)
+            presetfolder = "User parameter:BaseApp/Preferences/Mod/Timber/TimberBeamPresets/TBPreset" + str(idx)
             width = FreeCAD.ParamGet(presetfolder).GetString("Width")
             height = FreeCAD.ParamGet(presetfolder).GetString("Height")
         return [width, height]
-
 
 class _ViewProviderTimberBeam(ArchComponent.ViewProviderComponent):
     "The Structure ViewProvider object"

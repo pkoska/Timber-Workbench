@@ -39,4 +39,4 @@ from TimberComponent import *
 from TimberTools import *
 from TimberListing import *
 from TimberBeam import *
-from TimberMachinings import *
+#from TimberMachinings import *
