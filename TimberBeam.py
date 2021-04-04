@@ -358,6 +358,7 @@ class _TimberBeam(ArchComponent.Component):
             p.append(Vector(0,chamfer,height))
             p.append(Vector(0,0,height-chamfer))
             p.append(Vector(0,0,chamfer))
+            # Add feature for all directions
             #p.append(Vector(chamfer,0,0))
             #p.append(Vector(length-chamfer,0,0))
             #p.append(Vector(length,chamfer,0))
