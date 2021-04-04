@@ -26,57 +26,30 @@
 #*   Jonathan Wiedemann 2015                                               *
 #***************************************************************************/
 
+__title__="FreeCAD Timber API"
+__author__ = "Bernard Blockmans"
+__url__ = "http://www.freecadweb.org"
+
+import FreeCAD,Arch
+
+def getTagList():
+    taglist = []
+    for obj in FreeCAD.ActiveDocument.Objects :
+        try :
+            if obj.Tag:
+                if taglist.count(str(obj.Tag)) == 0:
+                    taglist.append(str(obj.Tag))
+        except AttributeError:
+            pass
+    return taglist
 
 
-class TimberWorkbench ( Workbench ):
-    "Timber workbench object"
-    Icon = """
-/* XPM */
-static char * infologo_xpm[] = {
-"16 16 2 1",
-" 	c None",
-".	c #E55303",
-"                ",
-"       .        ",
-"      ...       ",
-"     . . .      ",
-"    .  .  .     ",
-"   . . . . .    ",
-"  .   ...   .   ",
-" .     .     .  ",
-"............... ",
-" .  .     .  .  ",
-" . .       . .  ",
-" ..         ..  ",
-" .           .  ",
-" .           .  ",
-" .           .  ",
-" .           .  "};
-"""
-    MenuText = "Timber"
-    ToolTip = "Timber workbench"
-
-    def Initialize(self) :
-        import Timber
-        #self.appendToolbar('TimberTools',['Timber_Tag','Timber_List'])
-        #self.appendMenu('TimberTools',['Timber_Tag','Timber_List'])
-        self.appendToolbar('TimberTools',['Timber_Repartition','Timber_Tag'])
-        self.appendToolbar('TimberListing',['Timber_Listing'])
-        self.appendToolbar('TimberBeam',['Timber_Beam'])
-        self.appendToolbar('TimberMachinings',['Timber_MachiningCut','Timber_MachiningTenon'])
-        self.appendMenu('TimberTools',['Timber_Repartition','Timber_Tag'])
-        self.appendMenu('TimberListing',['Timber_Listing'])
-        self.appendMenu('TimberBeam',['Timber_Beam'])
-        self.appendMenu('TimberBeam',['Timber_MachiningCut','Timber_MachiningTenon'])
-        FreeCADGui.addIconPath(":/icons")
-        Log ('Loading Timber module... done\n')
-
-    def GetClassName(self):
-        #return "InfoGui::Workbench"
-        return "Gui::PythonWorkbench"
-
-Gui.addWorkbench(TimberWorkbench())
-
-# add import/export types
-#FreeCAD.addImportType("Wood Working Machine (*.btl)","importBTL")
-#FreeCAD.addExportType("Wood Working Machine (*.btl)","exportBTL")
+def filterTaggedObjects(objs,taglist):
+    '''
+    BBL not used yet
+    '''
+    objs = [o for o in objs if ( o!=None  and  hasattr(o,"Tag") and o.Tag)]
+    # vérifier si le tag de l'objet est bien présent dans la liste des tag sur lesquels on filtre
+    if tagFilter:
+        objs = [o for o in objs if (o.Tag in taglist )]
+    return objs

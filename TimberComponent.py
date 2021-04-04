@@ -28,9 +28,14 @@ if FreeCAD.GuiUp:
     import DraftGui
     from PySide import QtCore, QtGui
     from DraftTools import translate
+    from PySide.QtCore import QT_TRANSLATE_NOOP
 else:
+    # \cond
     def translate(ctxt,txt):
         return txt
+    def QT_TRANSLATE_NOOP(ctxt,txt):
+        return txt
+    # \endcond
 
 __title__="FreeCAD Timber Component"
 __author__ = "Jonathan Wiedemann"
@@ -377,32 +382,32 @@ class TimberBeamTaskPanel:
         self.update()
 
     def retranslateUi(self, TaskPanel):
-        TaskPanel.setWindowTitle(QtGui.QApplication.translate("Timber", "Timber", None))
-        self.delButton.setText(QtGui.QApplication.translate("Arch", "Remove", None))
-        self.addButton.setText(QtGui.QApplication.translate("Arch", "Add", None))
-        self.title.setText(QtGui.QApplication.translate("Arch", "Components of this object", None))
-        self.treeBase.setText(0,QtGui.QApplication.translate("Arch", "Base component", None))
-        self.treeAdditions.setText(0,QtGui.QApplication.translate("Arch", "Additions", None))
-        self.treeSubtractions.setText(0,QtGui.QApplication.translate("Arch", "Subtractions", None))
-        self.treeObjects.setText(0,QtGui.QApplication.translate("Arch", "Objects", None))
-        self.treeAxes.setText(0,QtGui.QApplication.translate("Arch", "Axes", None))
-        self.treeComponents.setText(0,QtGui.QApplication.translate("Arch", "Components", None))
-        self.treeFixtures.setText(0,QtGui.QApplication.translate("Arch", "Fixtures", None))
-        self.treeMachinings.setText(0,QtGui.QApplication.translate("Timber", "Machinings", None))
+        TaskPanel.setWindowTitle(QT_TRANSLATE_NOOP("Timber", "Timber"))
+        self.delButton.setText(QT_TRANSLATE_NOOP("Arch", "Remove"))
+        self.addButton.setText(QT_TRANSLATE_NOOP("Arch", "Add"))
+        self.title.setText(QT_TRANSLATE_NOOP("Arch", "Components of this object"))
+        self.treeBase.setText(0,QT_TRANSLATE_NOOP("Arch", "Base component"))
+        self.treeAdditions.setText(0,QT_TRANSLATE_NOOP("Arch", "Additions"))
+        self.treeSubtractions.setText(0,QT_TRANSLATE_NOOP("Arch", "Subtractions"))
+        self.treeObjects.setText(0,QT_TRANSLATE_NOOP("Arch", "Objects"))
+        self.treeAxes.setText(0,QT_TRANSLATE_NOOP("Arch", "Axes"))
+        self.treeComponents.setText(0,QT_TRANSLATE_NOOP("Arch", "Components"))
+        self.treeFixtures.setText(0,QT_TRANSLATE_NOOP("Arch", "Fixtures"))
+        self.treeMachinings.setText(0,QT_TRANSLATE_NOOP("Timber", "Machinings"))
 
-        applybutton = QtGui.QApplication.translate("Timber", "Apply", None)
-        self.widthL.setText(QtGui.QApplication.translate("Timber", "Width", None))
-        self.heightL.setText(QtGui.QApplication.translate("Timber", "Height", None))
-        self.presetsL.setText(QtGui.QApplication.translate("Timber", "Presets", None))
+        applybutton = QT_TRANSLATE_NOOP("Timber", "Apply")
+        self.widthL.setText(QT_TRANSLATE_NOOP("Timber", "Width"))
+        self.heightL.setText(QT_TRANSLATE_NOOP("Timber", "Height"))
+        self.presetsL.setText(QT_TRANSLATE_NOOP("Timber", "Presets"))
         if self.applyrename :
             self.presetRenameBT.setText(applybutton)
         else:
-            self.presetRenameBT.setText(QtGui.QApplication.translate("Timber", "Rename", None))
+            self.presetRenameBT.setText(QT_TRANSLATE_NOOP("Timber", "Rename"))
         if self.applynew :
             self.presetNewBT.setText(applybutton)
         else:
-            self.presetNewBT.setText(QtGui.QApplication.translate("Timber", "New", None))
-        self.presetSaveBT.setText(QtGui.QApplication.translate("Timber", "Save", None))
+            self.presetNewBT.setText(QT_TRANSLATE_NOOP("Timber", "New"))
+        self.presetSaveBT.setText(QT_TRANSLATE_NOOP("Timber", "Save"))
 
 def processSubShapes(obj,base,placement=None):
     "Adds additions and subtractions to a base shape"
