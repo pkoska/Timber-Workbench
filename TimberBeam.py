@@ -53,6 +53,7 @@ if FreeCAD.GuiUp:
 Roles = ["Beam","Column","Slab","Wall","Curtain Wall","Roof","Foundation","Pile","Tendon"]
 
 def makeTimberBeam(length=None, width=None, height=None, name="TimberBeam"):
+
     # Creates a timber beam element based on given profile object and extrusion height
     p = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Timber")
     obj = FreeCAD.ActiveDocument.addObject("Part::FeaturePython",name)
@@ -60,6 +61,10 @@ def makeTimberBeam(length=None, width=None, height=None, name="TimberBeam"):
     obj.addProperty("App::PropertyLength","Width","1Timber","The width of this element.")
     obj.addProperty("App::PropertyLength","Height","1Timber","The height of this element.")
     obj.addProperty("App::PropertyEnumeration","Preset","1Timber","Preset parameters for this beam")
+    #obj.addProperty("App::PropertyLinkList","Armatures","Arch","Armatures contained in this element")
+    #obj.addProperty("App::PropertyVector","Normal","Arch","The normal extrusion direction of this object (keep (0,0,0) for automatic normal)")
+    #obj.addProperty("App::PropertyVectorList","Nodes","Arch","The structural nodes of this element")
+    #obj.addProperty("App::PropertyString","Profile","Arch","A description of the standard profile this element is based upon")
     obj.Label = translate("TimberBeam",name)
     # Call TimberBeam class
     _TimberBeam(obj)
@@ -68,34 +73,38 @@ def makeTimberBeam(length=None, width=None, height=None, name="TimberBeam"):
     if width:
         obj.Width = width
     else:
-        obj.Width = p.GetFloat("BeamWidth",100.)
+        obj.Width = p.GetFloat("BeamWidth")
     if height:
         obj.Height = height
     else:
-        obj.Height = p.GetFloat("BeamHeight",200.)
+        obj.Height = p.GetFloat("BeamHeight")
     if length:
         obj.Length = length
     else:
-        obj.Length = p.GetFloat("BeamLength",1000.)
+        obj.Length = p.GetFloat("BeamLength")
     return obj
 
 
 class _CommandTimberBeam:
-    "the Timber Beam command definition"
+
+    # Timber Beam command definition
     def GetResources(self):
+
         return {'Pixmap'  :  __dir__ + '/icons/Timber_Beam.svg',
                 'MenuText': QtCore.QT_TRANSLATE_NOOP("Timber_Beam","TimberBeam"),
                 'Accel': "T, B",
                 'ToolTip': QtCore.QT_TRANSLATE_NOOP("Timber_Beam","Creates a structure object from scratch or from a selected object (sketch, wire, face or solid)")}
 
     def IsActive(self):
+
         return not FreeCAD.ActiveDocument is None
 
     def Activated(self):
+
         p = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Timber")
-        self.Length = p.GetFloat("BeamLength",7000)
-        self.Width = p.GetFloat("BeamWidth",100)
-        self.Height = p.GetFloat("BeamHeight",100)
+        self.Length = p.GetFloat("BeamLength",10)
+        self.Width = p.GetFloat("BeamWidth",1)
+        self.Height = p.GetFloat("BeamHeight",1)
         #self.Profile = 0
         self.continueCmd = False
         self.DECIMALS = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Units").GetInt("Decimals",2)
@@ -138,6 +147,7 @@ class _CommandTimberBeam:
         FreeCADGui.Snapper.getPoint(callback=self.getPoint, movecallback=self.update,extradlg=self.taskbox())
 
     def getPoint(self,point=None,obj=None):
+
         # This function is called by the Snapper when it has a 3D point
         self.tracker.finalize()
         if point == None:
@@ -154,6 +164,7 @@ class _CommandTimberBeam:
             self.Activated()
 
     def taskbox(self):
+
         # Set up taskbox widget
         w = QtGui.QWidget()
         ui = FreeCADGui.UiLoader()
@@ -217,6 +228,7 @@ class _CommandTimberBeam:
         return w
 
     def update(self,point,info):
+
         # Function is called by Snapper when mouse is moved
         if FreeCADGui.Control.activeDialog():
             if self.Height >= self.Length:
@@ -226,23 +238,28 @@ class _CommandTimberBeam:
             self.tracker.pos(point.add(delta))
 
     def setWidth(self,d):
+
         self.Width = d
         self.tracker.width(d)
 
     def setHeight(self,d):
+
         self.Height = d
         self.tracker.height(d)
 
     def setLength(self,d):
+
         self.Length = d
         self.tracker.length(d)
 
     def setContinue(self,i):
+
         self.continueCmd = bool(i)
         if hasattr(FreeCADGui,"draftToolBar"):
             FreeCADGui.draftToolBar.continueMode = bool(i)
 
     def setPreset(self,preset):
+
         #preset =
         presetdata = TimberComponent.getPresetData(preset)
         if presetdata:
@@ -250,6 +267,7 @@ class _CommandTimberBeam:
             self.vHeight.setText(presetdata[0])
 
     def rotate(self):
+
         l = self.Length
         w = self.Width
         h = self.Height
@@ -259,15 +277,13 @@ class _CommandTimberBeam:
 
 
 class _TimberBeam(ArchComponent.Component):
+
     # Create the timber beam object
     def __init__(self,obj):
-        print("Initialize timber beam class")
+
+        FreeCAD.Console.PrintMessage("Initialize timber beam class\n")
         ArchStructure._Structure.__init__(self,obj)
-        obj.addProperty("App::PropertyEnumeration","Preset","Timber","Preset parameters for this beam")
-        obj.addProperty("App::PropertyBool","Moise","Timber","Type of machining at beam start")
-        obj.addProperty("App::PropertyLink","Start","Timber","Type of machining at beam start")
-        obj.addProperty("App::PropertyLink","End","Timber","Type of machining at beam end")
-        obj.addProperty("App::PropertyLinkList","Machinings","Timber","All machinings of this beam")
+        self.setProperties(obj)
         self.Type = "TimberBeam"
         obj.Preset = TimberComponent.getPresetsList()
         base = Arch.makeStructure()
@@ -277,25 +293,143 @@ class _TimberBeam(ArchComponent.Component):
         base.setEditorMode("Length", 1)
         base.setEditorMode("Placement", 1)
         ArchComponent.addToComponent(obj, base, "Base")
-        print("TimberBeam End Init")
+        FreeCAD.Console.PrintMessage('Created object {0:s} ({1:s})'.format(obj.Name, self.Type) + "\n")
+
+    def setProperties(self,obj):
+        
+        FreeCAD.Console.PrintMessage("Set properties\n")
+        pl = obj.PropertiesList
+        obj.addProperty("App::PropertyEnumeration","Preset","Timber","Preset parameters for this beam")
+        obj.addProperty("App::PropertyBool","Moise","Timber","Type of machining at beam start")
+        obj.addProperty("App::PropertyLink","Start","Timber","Type of machining at beam start")
+        obj.addProperty("App::PropertyLink","End","Timber","Type of machining at beam end")
+        obj.addProperty("App::PropertyLinkList","Machinings","Timber","All machinings of this beam")
+        if not "Chamfer" in pl:
+            obj.addProperty("App::PropertyDistance","Chamfer","Timber",QT_TRANSLATE_NOOP("App::Property","The size of the chamfer of this element"))
+        if not "DentLength" in pl:
+            obj.addProperty("App::PropertyDistance","DentLength","Timber",QT_TRANSLATE_NOOP("App::Property","The dent length of this element"))
+        if not "DentHeight" in pl:
+            obj.addProperty("App::PropertyDistance","DentHeight","Timber",QT_TRANSLATE_NOOP("App::Property","The dent height of this element"))
+        if not "Dents" in pl:
+            obj.addProperty("App::PropertyStringList","Dents","Timber",QT_TRANSLATE_NOOP("App::Property","The dents of this element"))
 
     def execute(self, obj):
-        print("TimberBeam Start Execute")
+
+        if self.clone(obj):
+            FreeCAD.Console.PrintMessage("Error: Return from execute function\n")
+            return
+
+        FreeCAD.Console.PrintMessage("Recompute Python Box feature\n")
+
         currentpreset = obj.Preset
         if currentpreset in TimberComponent.getPresetsList() :
             obj.Preset = currentpreset
         else:
             obj.Preset = "None"
             print(translate("Timber","This preset is not either in the presets list"))
+        
         pl = obj.Base.Placement
         base = obj.Base.Shape.copy()
-        base = TimberComponent.processSubShapes(obj,base,pl)
-        obj.Shape = base
-        print("TimberBeam End Execute")
-        print('Recomputing {0:s} ({1:s})'.format(obj.Name, self.Type))
 
-    def onChanged(self,obj,prop):
-        print("TimberBeam OnChanged")
+        # Chamfer and dent feature
+        length = obj.Length.Value
+        width = obj.Width.Value
+        height = obj.Height.Value
+        chamfer = obj.Chamfer.Value
+        dentlength = obj.DentLength.Value
+        dentheight = obj.DentHeight.Value
+        dents = obj.Dents
+
+        if (length == 0) or (width == 0) or (height == 0):
+            FreeCAD.Console.PrintMessage("Error: Length or Width or Height is too small\n")
+            return
+        if (chamfer >= width/2) or (chamfer >= height/2):
+            FreeCAD.Console.PrintMessage("Error: Chamfer value is too small\n")
+            return
+
+        import Part
+        p = []
+        if chamfer > 0:
+            p.append(Vector(0,chamfer,0))
+            p.append(Vector(0,width-chamfer,0))
+            p.append(Vector(0,width,chamfer))
+            p.append(Vector(0,width,height-chamfer))
+            p.append(Vector(0,width-chamfer,height))
+            p.append(Vector(0,chamfer,height))
+            p.append(Vector(0,0,height-chamfer))
+            p.append(Vector(0,0,chamfer))
+            #p.append(Vector(chamfer,0,0))
+            #p.append(Vector(length-chamfer,0,0))
+            #p.append(Vector(length,chamfer,0))
+            #p.append(Vector(length,length-chamfer,0))
+        else:
+            p.append(Vector(0,0,0))
+            p.append(Vector(0,width,0))
+            p.append(Vector(0,width,height))
+            p.append(Vector(0,0,height))
+        p.append(p[0])
+        p = Part.makePolygon(p)
+        f = Part.Face(p)
+        shape = f.extrude(Vector(length,0,0))
+        if (dentlength > 0) and (dentheight > 0):
+            p = []
+            p.append(Vector(0,0,0))
+            p.append(Vector(dentlength,0,0))
+            p.append(Vector(dentlength,width,0))
+            p.append(Vector(0,width,0))
+            p.append(p[0])
+            p = Part.makePolygon(p)
+            f = Part.Face(p)
+            d1 = f.extrude(Vector(0,0,dentheight))
+            d2 = d1.copy()
+            d2.translate(Vector(length-dentlength,0,0))
+            shape = shape.cut(d1)
+            shape = shape.cut(d2)
+        for dent in dents:
+            dent = dent.split(";")
+            if len(dent) == 7:
+                dentlength = float(dent[0])
+                dentwidth = float(dent[1])
+                dentheight = float(dent[2])
+                dentslant = float(dent[3])
+                dentchamfer = chamfer
+                dentlevel = float(dent[4])
+                dentrotation = float(dent[5])
+                dentoffset = float(dent[6])
+                if (dentlength == 0) or (dentwidth == 0) or (dentheight == 0):
+                    continue
+                if dentslant >= dentheight:
+                    continue
+                p = []
+                p.append(Vector(0-dentchamfer,0,0))
+                p.append(Vector(dentlength,0,dentslant))
+                p.append(Vector(dentlength,0,dentheight))
+                p.append(Vector(0-dentchamfer,0,dentheight))
+                p.append(p[0])
+                p = Part.makePolygon(p)
+                f = Part.Face(p)
+                dentshape = f.extrude(Vector(0,dentwidth,0))
+                dentshape.rotate(Vector(0,0,0),Vector(0,0,1),dentrotation)
+                if dentrotation == 0:
+                    dentshape.translate(Vector(length,dentoffset,0))
+                elif dentrotation == 90:
+                    dentshape.translate(Vector(length-dentoffset,width,0))
+                elif dentrotation == 180:
+                    dentshape.translate(Vector(0,width-dentoffset,0))
+                elif dentrotation == 270:
+                    dentshape.translate(Vector(dentoffset,0,0))
+                dentshape.translate(Vector(0,0,dentlevel))
+                shape = shape.fuse(dentshape)
+
+        shape = self.processSubShapes(obj, shape, pl)
+        
+        base = TimberComponent.processSubShapes(obj, shape, pl)
+        obj.Shape = shape
+
+        FreeCAD.Console.PrintMessage('Recomputing {0:s} ({1:s})'.format(obj.Name, self.Type) + "\n")
+
+    def onChanged(self, obj, prop):
+
         FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
         if prop == "Height":
             obj.Base.Height = obj.Height
@@ -312,30 +446,25 @@ class _TimberBeam(ArchComponent.Component):
                     obj.Height = presetData[1]
         if prop == "Placement":
             obj.Base.Placement = obj.Placement
-    
+        FreeCAD.Console.PrintMessage('Changed {0:s} ({1:s}) {2:s}'.format(obj.Name, self.Type, prop) + "\n")
+
     def getPresetData(self, preset):
-        print("TimberBeam getpresetData")
+
+        FreeCAD.Console.PrintMessage("Load timber beam preset data:\n")
         preset = obj.Preset
         if preset != "None":
             idx = self.presetslist.index(preset) - 1
-            presetfolder = "User parameter:BaseApp/Preferences/Mod/Timber-Workbench/TimberBeamPresets/TBPreset" + str(idx)
+            presetfolder = "User parameter:BaseApp/Preferences/Mod/Timber/Presets/TBPreset" + str(idx)
             width = FreeCAD.ParamGet(presetfolder).GetString("Width")
             height = FreeCAD.ParamGet(presetfolder).GetString("Height")
         return [width, height]
+        FreeCAD.Console.PrintMessage('Preset data loaded {0:s} ({1:s})'.format(preset.Name, self.Type) + "\n")
     
     '''
     # The Timber Beam object
     def __init__(self,obj):
         ArchComponent.Component.__init__(self,obj)
-        obj.addProperty("App::PropertyLength","Length","1Timber","The length of this element.")
-        obj.addProperty("App::PropertyLength","Width","1Timber","The width of this element.")
-        obj.addProperty("App::PropertyLength","Height","1Timber","The height of this element.")
-        obj.addProperty("App::PropertyEnumeration","Preset","1Timber","Preset parameters for this beam")
         obj.Preset = TimberComponent.getPresetsList()
-        #obj.addProperty("App::PropertyLinkList","Armatures","Arch","Armatures contained in this element")
-        #obj.addProperty("App::PropertyVector","Normal","Arch","The normal extrusion direction of this object (keep (0,0,0) for automatic normal)")
-        #obj.addProperty("App::PropertyVectorList","Nodes","Arch","The structural nodes of this element")
-        #obj.addProperty("App::PropertyString","Profile","Arch","A description of the standard profile this element is based upon")
         self.Type = "TimberBeam"
         obj.Role = Roles
         structure = Arch.makeStructure()
@@ -346,15 +475,6 @@ class _TimberBeam(ArchComponent.Component):
         structure.MoveWithHost = True
         ArchComponent.addToComponent( obj , structure , "Base" )
         #print("TimberBeam End Init")
-
-    def makeTimberBeam2( name = 'TimberBeam' ):
-        base = Arch.makeStructure( None, 1000.0 , 80.0 , 200.0 , 'TBStructure')
-        obj = Arch.makeStructure(base, 1 , 1 , 1 , name)
-        obj.setEditorMode("Length", 1)
-        obj.setEditorMode("Width", 1)
-        obj.setEditorMode("Height", 1)
-        obj.setEditorMode("Placement", 1)
-        return obj
 
     def execute(self, obj):
         # Called on document recompute
@@ -457,15 +577,18 @@ class _TimberBeam(ArchComponent.Component):
 class _ViewProviderTimberBeam(ArchComponent.ViewProviderComponent):
     "The Structure ViewProvider object"
     def __init__(self,vobj):
+
         ArchComponent.ViewProviderComponent.__init__(self,vobj)
         #vobj.addProperty("App::PropertyBool","ShowChamfer","Timber","If the nodes are visible or not").ShowNodes = False
 
     def getIcon(self):
+
         #import Arch_rc
         #return ":/icons/Arch_Structure_Tree.svg"
         return __dir__ + '/icons/Timber_Beam_Tree.svg'
 
-    def setEdit(self,vobj,mode):
+    def setEdit(self, vobj, mode):
+
         taskd = TimberComponent.TimberBeamTaskPanel()
         taskd.obj = self.Object
         taskd.update()
@@ -483,13 +606,15 @@ class _ViewProviderTimberBeam(ArchComponent.ViewProviderComponent):
         return True
 
     def unsetEdit(self,vobj,mode):
+
         self.Object.Base.ViewObject.ShowNodes = False
         FreeCAD.ActiveDocument.removeObject("Start")
         FreeCAD.ActiveDocument.removeObject("End")
         FreeCADGui.Control.closeDialog()
         return False
 
-    def onChanged(self,vobj,prop):
+    def onChanged(self, vobj, prop):
+
         if prop == "ShowNodes":
             #self.Object.Base.ViewObject.ShowNodes = True
             #if hasattr(self,"nodes"):

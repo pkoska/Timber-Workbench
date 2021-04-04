@@ -54,7 +54,7 @@ static char * infologo_xpm[] = {
 " .           .  "};
 """
     MenuText = "Timber"
-    ToolTip = "Timber workbench"
+    ToolTip = "Timber Workbench"
 
     def Initialize(self) :
         import Timber

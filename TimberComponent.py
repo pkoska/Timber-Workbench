@@ -52,7 +52,7 @@ def getExtremityTypesList():
 def getPresetsList():
     presets = ["None"]
     n=0
-    paramfolder = "User parameter:BaseApp/Preferences/Mod/Timber/TimberBeamPresets/TBPreset"
+    paramfolder = "User parameter:BaseApp/Preferences/Mod/Timber/Presets/TBPreset"
     presetname = FreeCAD.ParamGet(paramfolder+str(n)).GetString("Name")
     if presetname :
         while presetname :
@@ -62,9 +62,9 @@ def getPresetsList():
                 presets.append(presetname)
                 n += 1
             else:
-                FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Timber/TimberBeamPresets").RemGroup("TBPreset"+str(n))
+                FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Timber/Presets").RemGroup("TBPreset"+str(n))
     else:
-        FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Timber/TimberBeamPresets").RemGroup("TBPreset"+str(n))
+        FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Timber/Presets").RemGroup("TBPreset"+str(n))
     return presets
 
 def getPresetData(preset):
@@ -73,7 +73,7 @@ def getPresetData(preset):
     if preset != "None":
         presetslist = getPresetsList()
         idx = presetslist.index(preset) - 1
-        presetfolder = "User parameter:BaseApp/Preferences/Mod/Timber/TimberBeamPresets/TBPreset" + str(idx)
+        presetfolder = "User parameter:BaseApp/Preferences/Mod/Timber/Presets/TBPreset" + str(idx)
         width = FreeCAD.ParamGet(presetfolder).GetString("Width")
         height = FreeCAD.ParamGet(presetfolder).GetString("Height")
     return [width, height]
@@ -319,7 +319,7 @@ class TimberBeamTaskPanel:
     def setPreset(self, idx):
         self.newpresetname = self.presetsCBB.currentText()
         if idx > 0 :
-            presetfolder = "User parameter:BaseApp/Preferences/Mod/Timber/TimberBeamPresets/TBPreset" + str(idx - 1)
+            presetfolder = "User parameter:BaseApp/Preferences/Mod/Timber/Presets/TBPreset" + str(idx - 1)
             newpreset = FreeCAD.ParamGet(presetfolder).GetString('Name')
         else:
             newpreset = "None"
@@ -334,7 +334,7 @@ class TimberBeamTaskPanel:
             self.presetSaveBT.setEnabled(True)
             newname = self.newpresetname
             idx = self.presetsCBB.currentIndex() - 1
-            presetfolder = "User parameter:BaseApp/Preferences/Mod/Timber/TimberBeamPresets/TBPreset" + str(idx)
+            presetfolder = "User parameter:BaseApp/Preferences/Mod/Timber/Presets/TBPreset" + str(idx)
             FreeCAD.ParamGet(presetfolder).SetString('Name', newname)
             FreeCAD.ActiveDocument.recompute()
             self.obj.Preset = str(newname)
@@ -353,6 +353,7 @@ class TimberBeamTaskPanel:
             self.presetRenameBT.setEnabled(True)
             self.presetSaveBT.setEnabled(True)
             idx = len(getPresetsList()) - 1
+            # Error starts here
             self.savePreset(True,idx)
             self.applynew = False
         else:
@@ -368,16 +369,19 @@ class TimberBeamTaskPanel:
     def savePreset(self, new=False, newidx=0):
         height = self.obj.Height.UserString
         width = self.obj.Width.UserString
+        # Panel has no ATT newpresetname
         newname = self.newpresetname
         if new :
             idx = newidx
         else :
             idx = self.presetsCBB.currentIndex() - 1
-        presetfolder = "User parameter:BaseApp/Preferences/Mod/Timber/TimberBeamPresets/TBPreset" + str(idx)
+        presetfolder = "User parameter:BaseApp/Preferences/Mod/Timber/Presets/TBPreset" + str(idx)
         FreeCAD.ParamGet(presetfolder).SetString('Name', newname)
         FreeCAD.ParamGet(presetfolder).SetString('Width', width)
         FreeCAD.ParamGet(presetfolder).SetString('Height', height)
         FreeCAD.ActiveDocument.recompute()
+        # FreeCAD.Console.PrintMessage(str(newname))
+        # Error here
         self.obj.Preset = str(newname)
         self.update()
 
